@@ -1,44 +1,81 @@
-import os 
+import os, string
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-def split(row):
-    return [char for char in row]
-
 file = open(dir_path + '/' + 'file.txt', 'r')
-Lines = file.readlines()
+lines = file.readlines()
 
+required_details = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
 passports = []
-passport = ''
-for line in Lines:
-    if line != '\n':
-        passport += line.replace('\n','')
-        passport += ' '
-    else:
+passport = {}
+
+
+for line in lines:
+    if line == '\n':        
         passports.append(passport)
-        passport = ''
+        passport = {}
+    else:
+        line = line.replace('\n', '')
+        for no_space in line.split(' '):
+            no_colon = no_space.split(':')
+            passport[no_colon[0]] = no_colon[1]
 
-#PART 1
-passport_details = {'byr':False, 'iyr':False, 'eyr':False, 'hgt':False, 'hcl':False, 'ecl':False, 'pid':False}
+if passport != {}:
+    passports.append(passport)
 
-passport_counter = 0
+valid_counter = 0
 
-for passport in passports:
-    details = passport.split(' ')
-    valid_counter = 0
-    for key_value in details:
-        kv = key_value.split(':')
-        passport_details[kv[0]] = True
+for pa in passports:
+    counter = 0
+    for detail in pa:
+        if detail in required_details:
+            counter += 1
+    
+    if counter == len(required_details):
+        valid_counter += 1
 
-    for pd in passport_details.items():
-        if pd[1] == True:
-            valid_counter += 1
-
-    if valid_counter >= len(passport_details.items()):
-        print(passport)
-        passport_counter += 1
-        
-print (passport_counter)
-
-
+print(valid_counter)
 
 #PART 2
+
+valid_counter = 0
+
+for pa in passports:
+    is_valid = True
+    counter = 0
+    for detail in pa:
+        if detail in required_details:
+            counter += 1
+    
+    if counter < len(required_details):
+        is_valid = False
+    else:
+        if len(pa['byr']) != 4 or not 1920 <= int(pa['byr']) <= 2002:
+            is_valid = False
+        
+        if len(pa['iyr']) != 4 or not 2010 <= int(pa['iyr']) <= 2020:
+            is_valid = False
+        
+        if len(pa['eyr']) != 4 or not 2020 <= int(pa['eyr']) <= 2030:
+            is_valid = False
+
+        if not ((pa['hgt'][-2:] == 'in' and 59 <= int(pa['hgt'][:-2]) <= 76) or (pa['hgt'][-2:] == 'cm' and 150 <= int(pa['hgt'][:-2]) <= 193)):
+                is_valid = False
+        
+        if pa['hcl'][0] != '#' or len(pa['hcl']) != 7:
+            is_valid = False
+
+        else:
+            for hex in pa['hcl'][1:0]:
+                if hex not in string.hexdigits:        
+                    is_valid = False
+        
+        if pa['ecl'] not in ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth']:
+            is_valid = False
+        
+        if not (len((pa['pid'])) == 9 and pa['pid'].isnumeric()):
+            is_valid = False
+    
+    if is_valid:
+        valid_counter += 1
+
+print(valid_counter)
