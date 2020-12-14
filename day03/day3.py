@@ -21,8 +21,7 @@ for row in map:
     if row[right] == '#':
         tree_counter += 1
         
-
-print (tree_counter)
+print(tree_counter)
 
 #PART 2
 directions = [[1,1],[3,1],[5,1],[7,1],[1,2]]
@@ -40,6 +39,7 @@ for direction in directions:
 
         right = (right + direction[0]) % row_length
         down += direction[1]
+        
     tree_list.append(tree_counter)
 
 tree_product = 0
