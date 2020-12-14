@@ -6,10 +6,10 @@ file = open(dir_path + '/' + 'file.txt', 'r')
 lines = file.readlines()
 
 earliest_depart = int(lines[0].replace('\n',''))
-bus_times = []
 
 #PART 1
 def part1():
+    bus_times = []
     for time in lines[1].split(','):
         if time != 'x':
             bus_times.append(int(time))
@@ -27,11 +27,27 @@ def part1():
     print(earliest_bus[1] * earliest_bus[0])
 
 #PART 2
+
 def part2():
+    bus_times = []
+    counter = 0
+
     for time in lines[1].split(','):
         if time != 'x':
-            bus_times.append(int(time))
-        else:
-            bus_times.append(time)
+            bus_times.append([int(time), counter])
+        counter += 1
+
+    early_match = 0
+    t_plus = 1
+
+    for bt in bus_times:
+        while True:
+            if (early_match + bt[1]) % bt[0] == 0:
+                t_plus *= bt[0]
+                break
+            early_match += t_plus
+
+    print(early_match)
+
 part1()
 part2()
